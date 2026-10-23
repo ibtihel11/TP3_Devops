@@ -51,3 +51,27 @@ def divide(data: DivideRequest):
         "result a/b=": data.a / data.b,
         "developer": "Dev2"
     }
+
+
+class UpdateRequest(BaseModel):
+    name: str
+
+
+items = {
+    1: {"name": "Item 1"},
+    2: {"name": "Item 2"}
+}
+
+@app.put("/update/{id}")
+def update_item(id: int, data: UpdateRequest):
+    if id not in items:
+        raise HTTPException(status_code=404, detail="Item not found")
+
+    items[id]["name"] = data.name
+
+    return {
+        "message": "Item updated successfully",
+        "id": id,
+        "item": items[id],
+        "developer": "Dev2"
+    }
