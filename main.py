@@ -75,3 +75,21 @@ def update_item(id: int, data: UpdateRequest):
         "item": items[id],
         "developer": "Dev2"
     }
+items = {
+    1: {"name": "Item 1"},
+    2: {"name": "Item 2"}
+}
+
+@app.delete("/remove/{id}")
+def remove_item(id: int):
+    if id not in items:
+        raise HTTPException(status_code=404, detail="Item not found")
+
+    removed = items.pop(id)
+
+    return {
+        "message": "Item deleted successfully",
+        "id": id,
+        "item": removed,
+        "developer": "Dev1"
+    }
