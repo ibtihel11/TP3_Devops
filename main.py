@@ -30,3 +30,6 @@ def greeting(name: str):
 def add_numbers(a: int, b: int):
     return {"result a+b=": a + b, "developer": "Dev1"}
 
+@app.post("/multiply")
+def multiply(a: int, b: int):
+    return {"result a*b=": a * b, "developer": "Dev1"}
