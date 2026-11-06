@@ -52,6 +52,9 @@ def divide(data: DivideRequest):
         "developer": "Dev2"
     }
 
+@app.get("/subtract")
+def subtract(a: int, b: int):
+    return {"result": a - b}
 
 class UpdateRequest(BaseModel):
     name: str
