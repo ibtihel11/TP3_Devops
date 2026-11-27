@@ -6,7 +6,25 @@ on:
     branches: [main]
 
 jobs:
+  pylint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Installer les dépendances
+        run: pip install -r requirements.txt pylint
+
+      - name: Analyser la qualité du code (Pylint)
+        run: pylint main.py test_main.py
+
   run-test:
+    needs: pylint
     runs-on: ubuntu-latest
     steps:
       - name: Récupérer le code
@@ -29,26 +47,31 @@ jobs:
         with:
           name: junit-report
           path: report.xml
-  
+
   calculate-coverage:
+    needs: pylint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Récupérer le code
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - name: Installer Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.13"
 
-      - name: Install dependencies
+      - name: Installer les dépendances
         run: pip install -r requirements.txt pytest-cov
 
-      - name: Run tests with coverage
-        run: pytest -v --cov=main --cov-report term-missing --cov-report xml:coverage.xml
+      - name: Calculer la couverture
+        run: pytest -v --cov=main --cov-report term-missing --cov-report xml:coverage.xml --cov-fail-under=90
 
-      - name: Show coverage in job summary
+      - name: Afficher la couverture dans le résumé
+        if: always()
         run: coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
 
-      - name: Upload coverage report
+      - name: Sauvegarder le rapport de couverture
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
