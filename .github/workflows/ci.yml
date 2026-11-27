@@ -29,3 +29,27 @@ jobs:
         with:
           name: junit-report
           path: report.xml
+  
+  calculate-coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt pytest-cov
+
+      - name: Run tests with coverage
+        run: pytest -v --cov=main --cov-report term-missing --cov-report xml:coverage.xml
+
+      - name: Show coverage in job summary
+        run: coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.xml
